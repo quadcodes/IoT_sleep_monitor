@@ -1,0 +1,29 @@
+01: set the Alarm
+ Write 10 bytes value 01HHMMSS, first 2 byte must be 01 in order to set the On-Timer, 	the bytes following are hours, minutes and seconds, 2 bytes for each. Hour is constrained 	from 0 to 24, minute is constrained from 0 to 59, and second is constrained from 0 to 59.
+The system works on military time for now, but the javascript side can handle the conversion of the 12 hour format is more readable.
+
+0102 Set the length of time you want to begin to be woken up. (to demonstrate this feature we will fade the light on, from up to 10 minutes before for now.).
+
+ 0103: start the on-timer
+
+
+020X – set sleep position(phone will detect this automatically with accelerometer).
+0201 -> lying on back
+0202 > lying on right side
+0203 -> lying on left side
+0204 -> lying on stomach
+0205 -> total amount of times changed plus other info. Would receive bytes in order listed above. Will receive back a 5 byte value with 1-4 being the bytes above, and the 5th byte the total number of changes.
+Counter for amount of times changed position in one sleep -> to signify restlesntess
+
+0301 -> set pulse info
+0302 -> return pulse info
+Button 1 will increase “pulse” by 1, as proof of concept
+
+0401 -> set breath rate
+0402  -> return “breath rate”
+button 2 will increase “breath rate” by 1 as prof of concept.
+
+
+0501 -> start “sleep”.
+-	As proof of concept we have to keep track of total amount slept, wo we are writing tags to start and stop the “sleep”. Of course in reality the app would determine this by some combo of heartrate/breathrate/pulse, but we are writing tags for this and will make wither a button in the app or make some sort of determination off our dummy pulse and breath rate data. Additionally, the pulse and heart rate are set up so it counts the number of them and divides by this running sleep timer to determine relevant information, since we may not have access to actual devices it could be a better proof of concept.
+0502 -> end sleep. Perhaps there will be button on phone or on wrist “device” for when you wake up. Or will ideally make determination off heart rate data and pulse and breath
