@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<!-- Heavily based on Bluetooth Low Energy Lock (c) 2014-2015 Don Coleman
+     See: https://github.com/MakeBluetooth/ble-lock/blob/master/phonegap/www/js/index.js -->
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>Sleep App</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+         <script>
+            //24 hour clock... not the best practice to have it in the html but by far the simplest.
+            //it is extra credit so hopefully no points will be taken off :)
+        function startTime() {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+            if(dd<10){
+              dd='0'+dd
+            } 
+            if(mm<10){
+              mm='0'+mm
+            } 
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+            document.getElementById('ymd').innerHTML =
+            yyyy + "/" + mm + "/" + dd;
+            document.getElementById('txt').innerHTML =
+            h + ":" + m + ":" + s;
+            var t = setTimeout(startTime, 500);
+        }
+        function checkTime(i) {
+            if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+            return i;
+        }
+        </script>
+
+
+
+        <script>
+// function setdata(){
+// console.log("TEST*********ZZZZAAAZAXDSVDFEG");
+
+// var newdata=[];
+// for (int i = 0; i < 7; i++) {
+//   newdata[i]=i+10;
+//   console.log(newdata[i]);
+// };
+// };
+var canvas = document.getElementById("myChart");
+var ctx = canvas.getContext('2d');
+var startingData = {
+      labels: [1, 2, 3, 4, 5, 6, 7],
+      datasets: [
+          {
+              fillColor: "rgba(220,220,220,0.2)",
+              strokeColor: "rgba(220,220,220,1)",
+              pointColor: "rgba(220,220,220,1)",
+              pointStrokeColor: "#fff",
+              data: [32,54,71,34,53,62,43]
+          }
+      ]
+    };
+var latestLabel = startingData.labels[6];
+
+// Reduce the animation steps for demo clarity.
+var myLiveChart = new Chart(ctx,{ type: 'line', data:startingData});
+
+
+// setInterval(function(){
+//   // Add two random numbers for each dataset
+//   myLiveChart.addData([Math.random() * 100, Math.random() * 100], ++latestLabel);
+//   // Remove the first point so we dont just add values forever
+//   myLiveChart.removeData();
+// }, 5000);
+</script>
+
+
+    </head>
+
+    <body onload="startTime()">
+        <script type="text/javascript" src="cordova.js"></script>
+
+<div id="deviceListScreen">
+<h1>Devices</h1>
+
+<ul id="deviceList">
+  <li>Searching...</li>
+</ul>
+
+<div>
+  <button id="refreshButton">Refresh</button>
+</div>
+
+</div>
+
+
+
+
+<div id="sleepControl">
+
+  <canvas id="barChart" width="400" height="400"></canvas>
+  <script>
+  var ctx3 = document.getElementById("barChart");
+  var data3 = {
+    labels: ["Back", "Right", "Left", "Stomach"],
+    datasets: [
+        {
+            label: "Sleep positions:",
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1,
+            data: [5, 3, 8, 10],
+        }
+    ]
+};
+  var myBarChart3 = new Chart(ctx3, {
+    type: 'bar',
+    data: data3,
+   
+});
+
+</script>
+ 
+
+  <button id="onButton">On</button>
+  <br />
+  <button id="offButton">Off</button>
+  <br />
+  <button id="disconnectButton">Disconnect</button>
+
+  <br />
+    <div id="ymd"></div>
+<div id="txt"></div>
+   
+    <button id="bfButton">Breath frequency Detail</button>
+    <br>
+  
+  
+   <button id="hrButton">Heart Rate Detail</button>
+  <br />
+  
+  <br />
+  
+  <button id="posButton"> Sleep Position Details</button>
+  <br />
+  <br />
+
+<button id="settimerbutton">Set Timer</button>
+<button id="starttimerbutton">Start Timer</button>
+<br/>
+<button id="startsleep">Start Sleep</button>
+ <button id="endsleep">End Sleep</button>
+</div>
+
+<style>
+    
+   #setTimer{
+        width: 400px;
+    height: 600px;
+   
+    font-size: :20px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+    }
+</style>
+<div id="setTimer" >
+    <h3>Alarm Clock</h3>
+
+  Hour:<input type="number" id="onHours" min="0" max="24">
+  Minute:<input type="number" id="onMinute" min="0" max="60">
+  Second:<input type="number" id="onSecond" min="0" max="60">
+  <br>
+  <p>Wake Up Duration:</p>
+  Minute:<input type="number" id="mDuration" min="0" max="30">
+  Second:<input type="number" id="sDuration" min="0" max="60">
+    <button id="settimer">set timer</button>
+ <button id="timertomainpage" class="backButtons"><i class="glyphicon glyphicon-arrow-left"></i>Back</button>
+ <br>
+ 
+</div>
+
+<style>
+#bfDetail{
+        width: 400px;
+    height: 600px;
+    
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+    }
+</style>
+
+<div id="bfDetail">
+  <nav><button id="bftomainpage" class="backButtons"><i class="glyphicon glyphicon-arrow-left"></i>Back</button></nav>
+   <div>
+  <canvas id="myChart" width="400" height="400"></canvas>
+<script>
+
+var ctx =document.getElementById("myChart");
+var startingData = {
+      labels: [1, 2, 3, 4, 5, 6, 7],
+      datasets: [
+          {
+              fillColor: "rgba(220,220,220,0.2)",
+              strokeColor: "rgba(220,220,220,1)",
+              pointColor: "rgba(220,220,220,1)",
+              pointStrokeColor: "#fff",
+              data: [32,34,41,34,33,39,37]
+          }
+      ]
+    };
+
+var myLiveChart = new Chart(ctx,{ type: 'line', data:startingData});
+
+</script>
+</div>
+    <h3>Breath Frequency Detail</h3>
+    Count:<lable id="bfCount">
+   
+    <br>
+    
+ 
+
+</div>
+
+
+<style>
+#hrDetail{
+        width: 400px;
+    height: 600px;
+   
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+    }
+</style>
+
+<div id="hrDetail">
+  <nav><button id="hrtomainpage" class="backButtons"><i class="glyphicon glyphicon-arrow-left"></i>Back</button></nav>
+    <div>
+  <canvas id="myChart2" width="400" height="400"></canvas>
+<script>
+
+var ctx2 =document.getElementById("myChart2");
+var startingData2 = {
+      labels: [1, 2, 3, 4, 5, 6, 7],
+      datasets: [
+          {
+              fillColor: "rgba(220,220,220,0.2)",
+              strokeColor: "rgba(220,220,220,1)",
+              pointColor: "rgba(220,220,220,1)",
+              pointStrokeColor: "#fff",
+              data: [62,74,71,64,63,62,68]
+          }
+      ]
+    };
+
+var myLiveChart2 = new Chart(ctx2,{ type: 'line', data:startingData2});
+
+</script>
+</div>
+    <h3>Heart Rate Detail</h3>
+    Count:<lable id="hrCount">
+    <br>
+ 
+</div>
+
+
+<style>
+#posDetail{
+        width: 400px;
+    height: 600px;
+    
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    margin: auto;
+    }
+</style>
+
+<div id="posDetail">
+  <nav><button id="postomainpage">Back</button></nav>
+  <b>Current Position: <p id="currentsleepposition"></p> </b>
+    <h3>Position Detail</h3>
+    Position:
+   <select id="selectpos">
+   <option value="back">Back</option>
+   <option value="right">Right</option>
+   <option value="left">Left</option>
+   <option value="stomach">Stomach</option>
+   </select>
+   </br>
+   <b>
+   Summary( # switched positions): 
+      </br>
+   Back: <label id = "backnum"> </label>
+   Right side: <label id = "right_sidenum"> </label>
+   Left side: <label id = "left_sidenum"> </label>
+   Stomach: <label id = "stomachnum"> </label>
+   </b>
+<br>
+  
+</div>
+
+<div id="statusDiv"></div>
+
+
+
+<div id="progress">
+  <p>Processing</p>
+</div>
+
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+
+    </body>
+
+</html>
+
